@@ -17,12 +17,13 @@ struct InfoRow: View {
         HStack {
             
             Image(systemName: icon)
+                .foregroundStyle(.gray)
             
             Text(text)
             
             Spacer()
         }
-        
+     
     }
 }
 
