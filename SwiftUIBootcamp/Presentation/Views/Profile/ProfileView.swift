@@ -29,15 +29,12 @@ struct ProfileView: View {
                     
                     
                     Spacer()
-                    
-                    Button {
+                  
+                    CustomButton(title: "Editar Perfil", icon: "pencil") {
                         
-                    } label: {
-                        
-                        Text("Editar Perfil")
-                            .primaryButtonStyle()
+                        print("Boton presionado")
                     }
-                    .buttonStyle(.plain)
+                  
                 }
                 .padding()
                 .navigationTitle("Mi Perfil")
