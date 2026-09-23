@@ -19,11 +19,14 @@ struct ProfileView: View {
                     
                     ProfileHeader(name: "Adrian Flores Herrera", role: "iOS Developer")
                     
-                    Divider()
                     
-                    ProfileInfo()
+                    CustomCard {
+                        
+                        ProfileInfo()
+
+                    }
                     
-                    Divider()
+                    
                     
                     Spacer()
                     
