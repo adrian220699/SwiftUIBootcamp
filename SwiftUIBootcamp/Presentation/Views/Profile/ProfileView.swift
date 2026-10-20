@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct ProfileView: View {
+    
+    @State private var isEditing : Bool = false
+    @State private var name : String = "Adrian Flores Herrera"
+    @State private var role : String = "iOS Developer"
+    
+    
 
     var body: some View {
 
@@ -15,10 +21,21 @@ struct ProfileView: View {
             
             ScrollView {
                 
-                VStack {
+                VStack (spacing: 20){
                     
-                    ProfileHeader(name: "Adrian Flores Herrera", role: "iOS Developer")
+                    ProfileHeader(name: $name,
+                                  role: $role,
+                                  isEditing: isEditing)
                     
+                    
+                    //1. Mostrar/Ocultar vistas condicionalmente segun el estado
+                    
+                    if isEditing {
+                        
+                        Text("Modo edición activado")
+                            .font(.subheadline)
+                            .foregroundStyle(.blue)
+                    }
                     
                     CustomCard {
                         
@@ -26,13 +43,15 @@ struct ProfileView: View {
 
                     }
                     
-                    
-                    
+    
                     Spacer()
+                    
+                    // 2. Parametros dinamicos y mutación dentro del closure
                   
-                    CustomButton(title: "Editar Perfil", icon: "pencil") {
+                    CustomButton(title: isEditing ? "Guardar Cambios" : "Editar Perfil",
+                                 icon: isEditing ? "checkmark" : "pencil") {
                         
-                        print("Boton presionado")
+                        isEditing.toggle()
                     }
                   
                 }

@@ -9,8 +9,12 @@ import SwiftUI
 
 struct ProfileHeader: View {
     
-    let name : String
-    let role : String
+    // 1.- Conexión bidireccional al estado que vive en ProfileView
+    
+    @Binding var name : String
+    @Binding var role : String
+    
+    let isEditing : Bool
     var isOnline : Bool = false
     
     var body: some View {
@@ -27,15 +31,25 @@ struct ProfileHeader: View {
                     .offset(x: 4, y: 4)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 
-                Text(name)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                // 2.- Si estamos editando, mostramos TextField, si no, text normal
                 
-                Text(role)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                if isEditing {
+                    TextField("Nombre", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                    TextField("Rol", text: $role)
+                        .textFieldStyle(.roundedBorder)
+                } else {
+                    Text(name)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    Text(role)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                
+                
             }
             
             Spacer()
@@ -48,6 +62,8 @@ struct ProfileHeader: View {
 
 #Preview {
     ProfileHeader(
-        name: "Adrian Flores",
-        role: "iOS Develope")
+        name: .constant("Adrian Flores Herrera"),
+        role: .constant("iOS Developer"),
+        isEditing: false
+    )
 }
