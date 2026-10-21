@@ -4,59 +4,46 @@
 //
 //  Created by Adrian Flores Herrera on 7/10/26.
 //
-
 import SwiftUI
 
 struct ProfileView: View {
     
-    @State private var isEditing : Bool = false
-    @State private var name : String = "Adrian Flores Herrera"
-    @State private var role : String = "iOS Developer"
+    @State private var name: String = "Adrian Flores Herrera"
+    @State private var role: ExperienceLevel = .junior
+    @State private var isOnline: Bool = true
+    @State private var email: String = "ddddd@outlook.com"
+    @State private var phoneNumber: String = "+56 0000 0000"
+    @State private var address: String = "Taltizapan 100, 00000 Zacatepec Morelos"
+    @State private var showEditModal: Bool = false
     
-    
-
     var body: some View {
-
         NavigationStack {
-            
             ScrollView {
-                
-                VStack (spacing: 20){
-                    
-                    ProfileHeader(name: $name,
-                                  role: $role,
-                                  isEditing: isEditing)
-                    
-                    
-                    //1. Mostrar/Ocultar vistas condicionalmente segun el estado
-                    
-                    if isEditing {
-                        
-                        Text("Modo edición activado")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-                    }
+                VStack(spacing: 20) {
+                    ProfileHeader(name: name, role: role, isOnline: isOnline)
                     
                     CustomCard {
-                        
-                        ProfileInfo()
-
+                        ProfileInfo(email: email, phoneNumber: phoneNumber, address: address)
                     }
                     
-    
                     Spacer()
-                    
-                    // 2. Parametros dinamicos y mutación dentro del closure
                   
-                    CustomButton(title: isEditing ? "Guardar Cambios" : "Editar Perfil",
-                                 icon: isEditing ? "checkmark" : "pencil") {
-                        
-                        isEditing.toggle()
+                    CustomButton(title: "Editar Perfil", icon: "pencil") {
+                        showEditModal = true
                     }
-                  
                 }
                 .padding()
                 .navigationTitle("Mi Perfil")
+                .sheet(isPresented: $showEditModal) {
+                    EditProfileView(
+                        name: $name,
+                        role: $role,
+                        isOnline: $isOnline,
+                        email: $email,
+                        phoneNumber: $phoneNumber,
+                        address: $address
+                    )
+                }
             }
         }
     }

@@ -8,20 +8,13 @@
 import SwiftUI
 
 struct ProfileHeader: View {
-    
-    // 1.- Conexión bidireccional al estado que vive en ProfileView
-    
-    @Binding var name : String
-    @Binding var role : String
-    
-    let isEditing : Bool
-    var isOnline : Bool = false
+    let name: String
+    let role: ExperienceLevel
+    let isOnline: Bool
     
     var body: some View {
-        
         HStack(spacing: 16) {
-            
-            ZStack (alignment: .bottomTrailing){
+            ZStack(alignment: .bottomTrailing) {
                 Image(systemName: "person.circle.fill")
                     .font(.system(size: 90))
                     .foregroundStyle(.blue)
@@ -31,39 +24,25 @@ struct ProfileHeader: View {
                     .offset(x: 4, y: 4)
             }
             
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(name)
+                    .font(.title2)
+                    .fontWeight(.bold)
                 
-                // 2.- Si estamos editando, mostramos TextField, si no, text normal
-                
-                if isEditing {
-                    TextField("Nombre", text: $name)
-                        .textFieldStyle(.roundedBorder)
-                    TextField("Rol", text: $role)
-                        .textFieldStyle(.roundedBorder)
-                } else {
-                    Text(name)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text(role)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                
-                
+                Text(role.rawValue)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             
             Spacer()
         }
-        
     }
-    
 }
-
 
 #Preview {
     ProfileHeader(
-        name: .constant("Adrian Flores Herrera"),
-        role: .constant("iOS Developer"),
-        isEditing: false
+        name: "Adrian Flores Herrera",
+        role: .junior,
+        isOnline: true
     )
 }

@@ -9,51 +9,83 @@ import SwiftUI
 
 struct EditProfileView : View {
     
-    @State private var name : String = "Adrian Flores Herrera"
-    @State private var selectedLevel : ExperienceLevel = .junior
-    @State private var isOnline : Bool = true
+    //Inyección de la acción de descarte provista por el entorno
+    
+    @Environment(\.dismiss) private var dismiss
+    @Binding var name : String
+    @Binding var role : ExperienceLevel
+    @Binding var isOnline : Bool
+    @Binding var email : String
+    @Binding var phoneNumber : String
+    @Binding var address : String
     @State private var securityPin : String = ""
+    
+    
     
     var body: some View {
         
-        Form {
+        NavigationStack {
             
-            // Seccion 1: Campo de texto regular
-            Section ("Datos Personales") {
-
-                TextField("Nombre completo", text: $name)
+            Form {
+                
+                // Seccion 1: Campo de texto regular
+                Section ("Datos Personales") {
+                    
+                    TextField("Nombre completo", text: $name)
+                    TextField("Correo Electronico", text: $email)
+                    TextField("Numero", text: $phoneNumber)
+                    TextField("Dirección", text: $address)
+                }
+                
+                //Seccion 2: Selector y Switch Nativo
+                Section("Perfil Profesional") {
+                    
+                    Picker("Nivel de experiencia", selection: $role) {
+                        ForEach(ExperienceLevel.allCases) { level in
+                            Text(level.rawValue).tag(level)
+                            
+                        }
+                    }
+                    
+                    Toggle("Disponible para trabajar", isOn : $isOnline)
+                    
+                }
+                                
+                //Seccion 4: Campo Oculto para contraseñas / PIN
+                
+                Section(header: Text("Seguridad"), footer: Text("El PIN debe tener 4 digitos.")) {
+                    SecureField("PIN de seguridad", text: $securityPin)
+                        .keyboardType(.numberPad)
+                }
+                
             }
             
-            //Seccion 2: Selector y Switch Nativo
-            Section("Perfil Profesional") {
-                
-                Picker("Nivel de experiencia", selection: $selectedLevel) {
-                    ForEach(ExperienceLevel.allCases) { level in
-                        Text(level.rawValue).tag(level)
-                        
+            .navigationTitle("Editar Perfil")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancelar") {
+                        dismiss()
                     }
                 }
                 
-                Toggle("Disponible para trabajar", isOn: $isOnline)
-                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Listo") {
+                        dismiss()
+                    }
+                    .fontWeight(.bold)
+                }
             }
-            
-            //Seccion 3: Campo Oculto para contraseñas / PIN
-            
-            Section(header: Text("Seguridad"), footer: Text("El PIN debe tener 4 digitos.")) {
-                SecureField("PIN de seguridad", text: $securityPin)
-                    .keyboardType(.numberPad)
-            }
-            
         }
-        
-        .navigationTitle("Editar Perfil")
-        
     }
-    
 }
 
 
 #Preview {
-    EditProfileView()
+    EditProfileView(name: .constant("Adrian Flores Herrera"),
+                    role: .constant(.junior),
+                    isOnline: .constant(true),
+                    email: .constant("ddddd@outlook.com"),
+                    phoneNumber: .constant("+56 0000 0000"),
+                    address: .constant("Taltizapan 100, 00000 Zacatepec Morelos"))
 }
