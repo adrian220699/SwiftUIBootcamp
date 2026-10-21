@@ -4,7 +4,6 @@
 //
 //  Created by Adrian Flores Herrera on 9/23/26.
 //
-
 import SwiftUI
 
 struct ProfileHeader: View {

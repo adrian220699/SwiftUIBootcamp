@@ -8,41 +8,41 @@ import SwiftUI
 
 struct ProfileView: View {
     
-    @State private var name: String = "Adrian Flores Herrera"
-    @State private var role: ExperienceLevel = .junior
-    @State private var isOnline: Bool = true
-    @State private var email: String = "ddddd@outlook.com"
-    @State private var phoneNumber: String = "+56 0000 0000"
-    @State private var address: String = "Taltizapan 100, 00000 Zacatepec Morelos"
-    @State private var showEditModal: Bool = false
+    // 1. Instanciamos el ViewModel con @State (estandar moderno @Observable)
+    
+    @State private var viewModel = ProfileViewModel()
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    ProfileHeader(name: name, role: role, isOnline: isOnline)
+                   
+                    //2. Leemos directamente las propiedades desde el ViewModel
                     
+                    ProfileHeader(name: viewModel.user.name,
+                                  role: viewModel.user.role,
+                                  isOnline: viewModel.user.isOnline)
+
                     CustomCard {
-                        ProfileInfo(email: email, phoneNumber: phoneNumber, address: address)
+                        ProfileInfo(email: viewModel.user.email,
+                                    phoneNumber: viewModel.user.phoneNumber,
+                                    address: viewModel.user.address)
                     }
                     
                     Spacer()
+                    
+                    // 3. Ejecutamos la acción llamando al método del ViewModel
                   
                     CustomButton(title: "Editar Perfil", icon: "pencil") {
-                        showEditModal = true
+                        viewModel.openEditModal()
                     }
                 }
                 .padding()
                 .navigationTitle("Mi Perfil")
-                .sheet(isPresented: $showEditModal) {
-                    EditProfileView(
-                        name: $name,
-                        role: $role,
-                        isOnline: $isOnline,
-                        email: $email,
-                        phoneNumber: $phoneNumber,
-                        address: $address
-                    )
+                .sheet(isPresented: $viewModel.showEditModal) {
+                    
+                    // 4. Proyección del Binding con '$' directamente hacia el modelo
+                    EditProfileView(user: $viewModel.user)
                 }
             }
         }
