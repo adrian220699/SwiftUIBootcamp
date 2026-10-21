@@ -42,7 +42,7 @@ struct ProfileView: View {
                 .sheet(isPresented: $viewModel.showEditModal) {
                     
                     // 4. Proyección del Binding con '$' directamente hacia el modelo
-                    EditProfileView(user: $viewModel.user)
+                    EditProfileView(viewModel: viewModel)
                 }
             }
         }

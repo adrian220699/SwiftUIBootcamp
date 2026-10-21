@@ -7,58 +7,45 @@
 
 import SwiftUI
 
-struct EditProfileView : View {
-    
-    //Inyección de la acción de descarte provista por el entorno
+struct EditProfileView: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    // Un unico Binding bidireccional a toda la entidad
-    
-    @Binding var user : UserProfile
-
-    @State private var securityPin : String = ""
-    
-    
+    // Recibimos el ViewModel para sincronizar cambios y leer validaciones
+    @Bindable var viewModel: ProfileViewModel
     
     var body: some View {
-        
         NavigationStack {
-            
             Form {
-                
-                // Seccion 1: Campo de texto regular
-                Section ("Datos Personales") {
+                Section("Datos Personales") {
+                    TextField("Nombre completo", text: $viewModel.user.name)
                     
-                    TextField("Nombre completo", text: $user.name)
-                    TextField("Correo Electronico", text: $user.email)
-                    TextField("Numero", text: $user.phoneNumber)
-                    TextField("Dirección", text: $user.address)
+                    TextField("Correo Electrónico", text: $viewModel.user.email)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    
+                    TextField("Teléfono", text: $viewModel.user.phoneNumber)
+                        .keyboardType(.phonePad)
+                    
+                    TextField("Dirección", text: $viewModel.user.address)
                 }
                 
-                //Seccion 2: Selector y Switch Nativo
                 Section("Perfil Profesional") {
-                    
-                    Picker("Nivel de experiencia", selection: $user.role) {
+                    Picker("Nivel de experiencia", selection: $viewModel.user.role) {
                         ForEach(ExperienceLevel.allCases) { level in
                             Text(level.rawValue).tag(level)
-                            
                         }
                     }
                     
-                    Toggle("Disponible para trabajar", isOn : $user.isOnline)
-                    
+                    Toggle("Disponible para trabajar", isOn: $viewModel.user.isOnline)
                 }
-                                
-                //Seccion 4: Campo Oculto para contraseñas / PIN
                 
-                Section(header: Text("Seguridad"), footer: Text("El PIN debe tener 4 digitos.")) {
-                    SecureField("PIN de seguridad", text: $securityPin)
+                Section(header: Text("Seguridad"), footer: Text(pinFooterText)) {
+                    SecureField("PIN de seguridad (4 dígitos)", text: $viewModel.securityPin)
                         .keyboardType(.numberPad)
                 }
-                
             }
-            
             .navigationTitle("Editar Perfil")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -70,16 +57,29 @@ struct EditProfileView : View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Listo") {
+                        viewModel.saveChanges()
                         dismiss()
                     }
                     .fontWeight(.bold)
+                    // Deshabilitación reactiva gobernada por el ViewModel:
+                    .disabled(!viewModel.isFormValid)
                 }
             }
         }
     }
+    
+    // Mensaje dinámico de ayuda según el estado del PIN
+    private var pinFooterText: String {
+        if viewModel.securityPin.isEmpty {
+            return "Ingresa un PIN de 4 dígitos para autorizar cambios."
+        } else if !viewModel.isPinValid {
+            return "El PIN debe contener exactamente 4 números."
+        } else {
+            return "PIN válido."
+        }
+    }
 }
 
-
 #Preview {
-    EditProfileView(user: .constant(.mock))
+    EditProfileView(viewModel: ProfileViewModel())
 }

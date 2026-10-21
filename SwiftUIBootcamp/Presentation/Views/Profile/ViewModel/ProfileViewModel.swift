@@ -14,6 +14,7 @@ final class ProfileViewModel {
     
     var user : UserProfile
     var showEditModal : Bool = false
+    var securityPin : String = ""
     
     //MARK: - Inicializador
     
@@ -21,10 +22,44 @@ final class ProfileViewModel {
         self.user = user
     }
     
+    //MARK: - Validaciones de Negocio (Propiedades Computadas)
+    
+    var isNameValid : Bool {
+        
+       return !user.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        
+    }
+    
+    var isEmailValid : Bool {
+        
+        //Validación basica de estructura de correo
+        
+        let emailRegex = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}$"#
+        
+        return user.email.range(of: emailRegex, options: .regularExpression) != nil
+    }
+    
+    var isPinValid : Bool {
+        
+        //Debe tener exactamente 4 digitos numéricos
+        
+        securityPin.count == 4 && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: securityPin))
+    }
+    
+    // Regla maestra : todos los campos requeridos deben ser validos
+    
+    var isFormValid : Bool {
+        
+        isNameValid && isEmailValid && isPinValid
+    }
+    
+    
+    
     //MARK: - Intenciones del Usuario (Lógica de Presentación)
     
     func openEditModal() {
-        showEditModal = true
+        securityPin = "" //Limpiamos el PIN al abrir
+         showEditModal = true
     }
     
     func closeEditModal() {
@@ -33,6 +68,13 @@ final class ProfileViewModel {
     
     func toggleOnlineStatus() {
         user.isOnline.toggle()
+    }
+    
+    func saveChanges() {
+        guard isFormValid else { return }
+        
+        //Aqui conectaremos la persistencia o llamada a API
+        closeEditModal()
     }
     
 }
