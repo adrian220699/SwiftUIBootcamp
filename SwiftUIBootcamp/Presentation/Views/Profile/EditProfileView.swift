@@ -18,6 +18,7 @@ struct EditProfileView: View {
         NavigationStack {
             Form {
                 Section("Datos Personales") {
+                    
                     TextField("Nombre completo", text: $viewModel.user.name)
                     
                     TextField("Correo Electrónico", text: $viewModel.user.email)
@@ -29,6 +30,13 @@ struct EditProfileView: View {
                         .keyboardType(.phonePad)
                     
                     TextField("Dirección", text: $viewModel.user.address)
+                    
+                    Picker("Color de foto de perfil", selection: $viewModel.user.photoUser) {
+                        ForEach(PhotoUserSelector.allCases) { photoOption in
+                            Text(photoOption.rawValue).tag(photoOption)
+                        }
+                    }
+                    
                 }
                 
                 Section("Perfil Profesional") {

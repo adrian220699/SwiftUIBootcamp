@@ -21,7 +21,8 @@ struct ProfileView: View {
                     
                     ProfileHeader(name: viewModel.user.name,
                                   role: viewModel.user.role,
-                                  isOnline: viewModel.user.isOnline)
+                                  isOnline: viewModel.user.isOnline,
+                                 avatarColor: viewModel.user.photoUser.color)
 
                     CustomCard {
                         ProfileInfo(email: viewModel.user.email,

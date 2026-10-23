@@ -10,13 +10,14 @@ struct ProfileHeader: View {
     let name: String
     let role: ExperienceLevel
     let isOnline: Bool
+    let avatarColor: Color // Nombre corregido y más semántico
     
     var body: some View {
         HStack(spacing: 16) {
             ZStack(alignment: .bottomTrailing) {
                 Image(systemName: "person.circle.fill")
                     .font(.system(size: 90))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(avatarColor)
                 Circle()
                     .fill(isOnline ? .green : .red)
                     .frame(width: 18, height: 18)
@@ -38,10 +39,26 @@ struct ProfileHeader: View {
     }
 }
 
+ //MARK: - Extensión en la capa de Presentación para convertir la entidad de Dominio en un Color de SwiftUI
+
+extension PhotoUserSelector {
+    var color: Color {
+        switch self {
+        case .blue: return .blue
+        case .green: return .green
+        case .yellow: return .yellow
+        case .pink: return .pink
+        case .red: return .red
+        }
+    }
+}
+
+
 #Preview {
     ProfileHeader(
         name: "Adrian Flores Herrera",
         role: .junior,
-        isOnline: true
+        isOnline: true,
+        avatarColor: .blue
     )
 }

@@ -16,6 +16,7 @@ final class ProfileViewModel {
     var showEditModal : Bool = false
     var securityPin : String = ""
     
+    
     //MARK: - Inicializador
     
     init(user : UserProfile = .mock) {
