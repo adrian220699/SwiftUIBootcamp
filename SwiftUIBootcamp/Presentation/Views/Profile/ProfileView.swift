@@ -40,10 +40,25 @@ struct ProfileView: View {
                 }
                 .padding()
                 .navigationTitle("Mi Perfil")
-                .sheet(isPresented: $viewModel.showEditModal) {
+                .sheet(isPresented: $viewModel.showEditModal, onDismiss: {
                     
-                    // 4. Proyección del Binding con '$' directamente hacia el modelo
+                    //Si la modal se cerro con exito (sin errores y sin estar cargando), mostramos la alerta
+                    if viewModel.errorMessage == nil && !viewModel.isLoading && viewModel.isFormValid {
+                        
+                        viewModel.showSuccessAlert = true
+                    }
+                    
+                
+                }) {
+                
                     EditProfileView(viewModel: viewModel)
+                    
+                }
+                
+                .alert("Perfil Actualizado", isPresented: $viewModel.showSuccessAlert) {
+                    Button("Aceptar", role: .cancel) {}
+                } message: {
+                    Text("Los cambios se han guardado exitosamente.")
                 }
             }
         }

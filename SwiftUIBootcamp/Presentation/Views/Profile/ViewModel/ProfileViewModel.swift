@@ -5,17 +5,24 @@
 //  Created by Adrian Flores Herrera on 10/21/26.
 //
 import Foundation
-import SwiftUI
+import Observation
 
 @Observable
+@MainActor
 final class ProfileViewModel {
     
     //MARK: - Estado Observable
     
     var user : UserProfile
     var showEditModal : Bool = false
-    var securityPin : String = ""
     
+    var securityPin: String = "" 
+    
+    //MARK: - Estados Asíncronos y Feedback
+    
+    var isLoading: Bool = false
+    var errorMessage: String? = nil
+    var showSuccessAlert: Bool = false
     
     //MARK: - Inicializador
     
@@ -40,27 +47,38 @@ final class ProfileViewModel {
         return user.email.range(of: emailRegex, options: .regularExpression) != nil
     }
     
-    var isPinValid : Bool {
-        
-        //Debe tener exactamente 4 digitos numéricos
-        
-        securityPin.count == 4 && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: securityPin))
-    }
-    
-    // Regla maestra : todos los campos requeridos deben ser validos
+  // Regla maestra : todos los campos requeridos deben ser validos
     
     var isFormValid : Bool {
         
         isNameValid && isEmailValid && isPinValid
     }
     
-    
+    // MARK: - Validaciones de PIN
+        
+        // 1. Exactamente 4 caracteres y todos numéricos
+        var hasValidLength: Bool {
+            securityPin.count == 4 && securityPin.allSatisfy(\.isNumber)
+        }
+        
+        // 2. Comprueba si los 4 dígitos son idénticos (ej. "0000", "1111", "2222")
+        var hasRepeatedDigits: Bool {
+            guard hasValidLength else { return false }
+            return Set(securityPin).count == 1
+        }
+        
+        // 3. Válido si tiene 4 números Y NO son repetidos
+        var isPinValid: Bool {
+            hasValidLength && !hasRepeatedDigits
+        }
     
     //MARK: - Intenciones del Usuario (Lógica de Presentación)
     
     func openEditModal() {
         securityPin = "" //Limpiamos el PIN al abrir
+         errorMessage = nil
          showEditModal = true
+        
     }
     
     func closeEditModal() {
@@ -71,11 +89,39 @@ final class ProfileViewModel {
         user.isOnline.toggle()
     }
     
-    func saveChanges() {
+    //MARK: - Operación Asíncrona (Simulación de Red / Guardado)
+    
+    func saveChanges() async {
         guard isFormValid else { return }
         
-        //Aqui conectaremos la persistencia o llamada a API
-        closeEditModal()
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            
+            //Simulamos 1.5 segundos de latencia de red
+            try await Task.sleep(for: .seconds(1.0))
+            
+            // Regla de simulación de error : Si el PIN ingresado es "0000", lanzamos error de autorización
+            
+            if hasRepeatedDigits {
+                throw NSError(
+                    domain: "AuthSecurity",
+                    code: 422,
+                    userInfo: [NSLocalizedDescriptionKey: "PIN demasiado debil. No uses digitos consecutivos"]
+                )
+            }
+            
+            //Éxito: apagamos spinner, cerramos modal y disparamos alerta de confirmación
+            
+            isLoading = false
+            showEditModal = false
+            
+        } catch {
+            isLoading = false
+            errorMessage = error.localizedDescription
+        }
+    
     }
     
 }
